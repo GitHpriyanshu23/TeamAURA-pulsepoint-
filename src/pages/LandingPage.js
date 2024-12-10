@@ -18,7 +18,7 @@ function LandingPage() {
       }}
     >
       <Typography variant="h3" gutterBottom>
-        Welcome to Hospital Management System
+        Welcome to PulsePoint, A Hospital Management System
       </Typography>
       <Typography variant="h6" color="textSecondary" gutterBottom>
         Please log in to continue.

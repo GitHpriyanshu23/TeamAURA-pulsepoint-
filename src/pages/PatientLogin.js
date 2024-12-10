@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Card, CardContent, Alert } from '@mui/material';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Alert,
+  Box,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function PatientLogin() {
@@ -67,6 +76,18 @@ function PatientLogin() {
               Login
             </Button>
           </form>
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">
+              Don’t have an account?{' '}
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => navigate('/patient-signup')}
+              >
+                Sign Up
+              </Button>
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
     </Container>

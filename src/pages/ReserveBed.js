@@ -1,110 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Alert,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Typography, TextField, Button, MenuItem, Grid } from '@mui/material';
 
-const ReserveBed = () => {
-  const [bedType, setBedType] = useState('');
-  const [reservationDate, setReservationDate] = useState('');
-  const [availableBeds, setAvailableBeds] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+function ReserveBed() {
+  const [reservationData, setReservationData] = useState({
+    name: '',
+    hospital: '',
+    bedType: '',
+    date: '',
+  });
 
-  useEffect(() => {
-    // Simulated API call to fetch bed availability
-    const fetchBeds = async () => {
-      const data = [
-        { id: 1, type: 'General', available: 10 },
-        { id: 2, type: 'ICU', available: 5 },
-        { id: 3, type: 'Private', available: 3 },
-      ];
-      setAvailableBeds(data);
-    };
-    fetchBeds();
-  }, []);
+  const hospitals = ['City Hospital', 'Green Valley Hospital', 'Sunrise Medical Center'];
+  const bedTypes = ['General', 'Semi-Private', 'Private', 'ICU', 'CCU'];
 
-  const handleReserve = () => {
-    setOpenDialog(false);
-    setSuccessMessage(`Bed reserved successfully! Type: ${bedType}, Date: ${reservationDate}`);
-    setBedType('');
-    setReservationDate('');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setReservationData({ ...reservationData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Bed reserved successfully at ${reservationData.hospital}!`);
+    // Replace with API call
   };
 
   return (
-    <Container maxWidth="sm" style={{ marginTop: '20px' }}>
-      <Typography variant="h4" gutterBottom>
-        Reserve Bed
+    <Container maxWidth="sm" style={{ marginTop: '50px' }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Reserve a Hospital Bed
       </Typography>
-      <form>
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="bed-type-label">Bed Type</InputLabel>
-          <Select
-            labelId="bed-type-label"
-            value={bedType}
-            onChange={(e) => setBedType(e.target.value)}
-          >
-            {availableBeds.map((bed) => (
-              <MenuItem key={bed.id} value={bed.type}>
-                {bed.type} (Available: {bed.available})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={3}>
+          {/* Patient Name */}
+          <Grid item xs={12}>
+            <TextField
+              label="Patient Name"
+              name="name"
+              fullWidth
+              value={reservationData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
 
-        <TextField
-          label="Reservation Date"
-          type="date"
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-          margin="normal"
-          value={reservationDate}
-          onChange={(e) => setReservationDate(e.target.value)}
-        />
+          {/* Select Hospital */}
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Select Hospital"
+              name="hospital"
+              fullWidth
+              value={reservationData.hospital}
+              onChange={handleInputChange}
+              required
+            >
+              {hospitals.map((hospital) => (
+                <MenuItem key={hospital} value={hospital}>
+                  {hospital}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          style={{ marginTop: '20px' }}
-          onClick={() => setOpenDialog(true)}
-        >
-          Reserve Bed
-        </Button>
+          {/* Select Bed Type */}
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Select Bed Type"
+              name="bedType"
+              fullWidth
+              value={reservationData.bedType}
+              onChange={handleInputChange}
+              required
+            >
+              {bedTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* Reservation Date */}
+          <Grid item xs={12}>
+            <TextField
+              label="Reservation Date"
+              name="date"
+              type="date"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={reservationData.date}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
+
+          {/* Submit Button */}
+          <Grid item xs={12}>
+            <Button type="submit" variant="contained" color="primary" fullWidth>
+              Reserve Bed
+            </Button>
+          </Grid>
+        </Grid>
       </form>
-
-      {successMessage && (
-        <Alert severity="success" style={{ marginTop: '20px' }}>
-          {successMessage}
-        </Alert>
-      )}
-
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Confirm Reservation</DialogTitle>
-        <Typography style={{ margin: '16px' }}>
-          Are you sure you want to reserve a {bedType} bed for {reservationDate}?
-        </Typography>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleReserve} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
-};
+}
 
 export default ReserveBed;

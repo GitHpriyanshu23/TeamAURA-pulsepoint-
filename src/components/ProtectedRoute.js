@@ -1,24 +1,20 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, role: requiredRole }) {
   const role = localStorage.getItem('role'); // Get user role from localStorage
 
+  // If user is not logged in, redirect to landing page
   if (!role) {
-    return <Navigate to="/" />; // Redirect to landing page if not logged in
+    return <Navigate to="/" />;
   }
 
-  // Admin-only routes
-  if (children.type.name === 'AdminDashboard' && role !== 'admin') {
-    return <Navigate to="/admin-login" />;
+  // If the user's role does not match the required role, redirect to the appropriate login page
+  if (role !== requiredRole) {
+    return <Navigate to={requiredRole === 'admin' ? '/admin-login' : '/patient-login'} />;
   }
 
-  // Patient-only routes
-  if (children.type.name === 'PatientDashboard' && role !== 'patient') {
-    return <Navigate to="/patient-login" />;
-  }
-
-  return children;
+  return children; // Render the child component if all checks pass
 }
 
 export default ProtectedRoute;
