@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Card, CardContent, Alert } from '@mui/material';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Alert,
+  MenuItem,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function AdminLogin() {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [credentials, setCredentials] = useState({ email: '', password: '', role: 'admin' });
   const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
@@ -15,12 +24,19 @@ function AdminLogin() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Simulated admin login logic (replace with API)
-    if (credentials.email === 'admin@example.com' && credentials.password === 'password') {
-      localStorage.setItem('role', 'admin');
-      navigate('/admin-dashboard');
+    // Simulated multi-level login logic (replace with API)
+    const { email, password, role } = credentials;
+    if (
+      (email === 'admin@example.com' && password === 'password' && role === 'admin') ||
+      (email === 'doctor@example.com' && password === 'password' && role === 'doctor') ||
+      (email === 'nurse@example.com' && password === 'password' && role === 'nurse')
+    ) {
+      localStorage.setItem('role', role);
+      if (role === 'admin') navigate('/admin-dashboard');
+      if (role === 'doctor') navigate('/doctor-panel');
+      if (role === 'nurse') navigate('/nurse-panel');
     } else {
-      setError('Invalid email or password');
+      setError('Invalid email, password, or role');
     }
   };
 
@@ -29,7 +45,7 @@ function AdminLogin() {
       <Card elevation={3}>
         <CardContent>
           <Typography variant="h4" align="center" gutterBottom>
-            Admin Login
+            Hospital Staff Login
           </Typography>
           {error && (
             <Alert severity="error" style={{ marginBottom: '16px' }}>
@@ -57,6 +73,20 @@ function AdminLogin() {
               onChange={handleInputChange}
               required
             />
+            <TextField
+              label="Role"
+              name="role"
+              select
+              fullWidth
+              margin="normal"
+              value={credentials.role}
+              onChange={handleInputChange}
+              required
+            >
+              <MenuItem value="admin">Admin</MenuItem>
+              <MenuItem value="doctor">Doctor</MenuItem>
+              <MenuItem value="nurse">Nurse</MenuItem>
+            </TextField>
             <Button
               type="submit"
               variant="contained"

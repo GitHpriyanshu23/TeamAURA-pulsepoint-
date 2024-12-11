@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import AdminNavbar from './components/AdminNavbar'; // Admin-specific Navbar
-import PatientNavbar from './components/PatientNavbar'; // Patient-specific Navbar
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import DoctorPanel from './components/DoctorPanel';
+import NursePanel from './components/NursePanel';
+import AdminNavbar from './components/AdminNavbar';
+import PatientNavbar from './components/PatientNavbar';
+import DoctorNavbar from './components/DoctorNavbar';
+import NurseNavbar from './components/NurseNavbar'; // Separate navbar for nurses
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import PatientLogin from './pages/PatientLogin';
@@ -21,39 +25,56 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const [role, setRole] = useState(localStorage.getItem('role')); // Initialize role from localStorage
+  const navigate = useNavigate(); // React Router's navigation function
 
-  // Update role when localStorage changes
+  // Sync state with localStorage
   useEffect(() => {
     const handleStorageChange = () => {
       setRole(localStorage.getItem('role'));
     };
 
-    window.addEventListener('storage', handleStorageChange); // Listen to localStorage changes
+    window.addEventListener('storage', handleStorageChange);
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
+  // Navbar selection based on role
+  const renderNavbar = () => {
+    switch (role) {
+      case 'admin':
+        return <AdminNavbar />;
+      case 'patient':
+        return <PatientNavbar />;
+      case 'doctor':
+        return <DoctorNavbar />;
+      case 'nurse':
+        return <NurseNavbar />;
+      default:
+        return null; // No navbar for undefined roles
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Navbar */}
-      {role === 'admin' && <AdminNavbar />}
-      {role === 'patient' && <PatientNavbar />}
+      {/* Dynamic Navbar */}
+      {renderNavbar()}
 
       {/* Routes */}
       <div style={{ flex: 1 }}>
         <Routes>
-          {/* Landing Pages */}
+          {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Login Pages */}
           <Route
             path="/patient-login"
             element={
               <PatientLogin
                 onLoginSuccess={() => {
-                  localStorage.setItem('authToken', 'exampleToken'); // Replace with real token
                   localStorage.setItem('role', 'patient');
-                  setRole('patient'); // Update role in state
-                  window.location.href = '/patient-dashboard'; // Redirect
+                  setRole('patient');
+                  navigate('/patient-dashboard'); // Smooth navigation
                 }}
               />
             }
@@ -63,10 +84,33 @@ function App() {
             element={
               <AdminLogin
                 onLoginSuccess={() => {
-                  localStorage.setItem('authToken', 'exampleToken'); // Replace with real token
                   localStorage.setItem('role', 'admin');
-                  setRole('admin'); // Update role in state
-                  window.location.href = '/admin-dashboard'; // Redirect
+                  setRole('admin');
+                  navigate('/admin-dashboard'); // Smooth navigation
+                }}
+              />
+            }
+          />
+          <Route
+            path="/doctor-login"
+            element={
+              <AdminLogin
+                onLoginSuccess={() => {
+                  localStorage.setItem('role', 'doctor');
+                  setRole('doctor');
+                  navigate('/doctor-panel'); // Smooth navigation
+                }}
+              />
+            }
+          />
+          <Route
+            path="/nurse-login"
+            element={
+              <AdminLogin
+                onLoginSuccess={() => {
+                  localStorage.setItem('role', 'nurse');
+                  setRole('nurse');
+                  navigate('/nurse-panel'); // Smooth navigation
                 }}
               />
             }
@@ -153,6 +197,26 @@ function App() {
             element={
               <ProtectedRoute role="admin">
                 <ReservationHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Doctor Pages */}
+          <Route
+            path="/doctor-panel"
+            element={
+              <ProtectedRoute role="doctor">
+                <DoctorPanel />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Nurse Pages */}
+          <Route
+            path="/nurse-panel"
+            element={
+              <ProtectedRoute role="nurse">
+                <NursePanel />
               </ProtectedRoute>
             }
           />
