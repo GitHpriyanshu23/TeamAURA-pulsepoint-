@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Medicine</title>
+</head>
+<body>
+    <h1>Edit Medicine Details</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'medicine_list' %}">Back to Medicine List</a>
+</body>
+</html>
