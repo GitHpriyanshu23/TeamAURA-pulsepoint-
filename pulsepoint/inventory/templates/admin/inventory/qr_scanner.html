@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Scan QR Code to Add/Update Medicine</h1>
+<div id="qr-reader" style="width: 300px; margin-bottom: 20px;"></div>
+<div id="qr-result">
+    <strong>Scanned Data:</strong> <span id="result"></span>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+    const qrReader = new Html5Qrcode("qr-reader");
+    qrReader.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+            const data = JSON.parse(decodedText); // Parse scanned JSON data
+            fetch("/scan-qr/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if (result.message) {
+                        alert(result.message); // Show success message
+                        location.reload(); // Reload to reflect changes
+                    } else if (result.error) {
+                        alert(`Error: ${result.error}`);
+                    }
+                });
+        },
+        (errorMessage) => {
+            console.log("QR Code Error:", errorMessage);
+        }
+    );
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+<div>
+    <h2>Options to Add Medicine</h2>
+    <p>
+        <strong>Option 1:</strong> Fill in the details manually below.<br>
+        <strong>Option 2:</strong> 
+        <a href="{% url 'admin:qr_scanner' %}" class="button">Scan QR Code</a>
+    </p>
+</div>
+{{ block.super }}
+{% endblock %}
