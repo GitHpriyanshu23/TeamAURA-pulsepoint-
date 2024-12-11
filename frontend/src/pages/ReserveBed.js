@@ -20,7 +20,7 @@ function ReserveBed() {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Bed reserved successfully at ${reservationData.hospital}!`);
-  
+    // Replace with API call
   };
 
   return (

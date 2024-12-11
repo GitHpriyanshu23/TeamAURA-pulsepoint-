@@ -16,7 +16,7 @@ const ReservationHistory = () => {
   const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
-    
+    // Simulated API call to fetch reservation data
     const fetchReservations = async () => {
       const data = [
         { id: 1, patientName: 'John Doe', bedType: 'ICU', date: '2024-12-01', status: 'Confirmed' },

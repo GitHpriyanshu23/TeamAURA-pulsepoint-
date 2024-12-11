@@ -19,7 +19,7 @@ function AdminDashboard() {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: 'url("/assets/hospital.jpg")',
+          backgroundImage: 'url("/assets/hospital.jpg")', // Ensure correct image path
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           color: 'white',
@@ -56,7 +56,7 @@ function AdminDashboard() {
               }}
             >
               <CardContent>
-                <People style={{ fontSize: 60, color: '#757575' }} /> 
+                <People style={{ fontSize: 60, color: '#757575' }} /> {/* Increased size */}
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                   Manage OPD Queue
                 </Typography>
@@ -67,9 +67,9 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
                   onClick={() => navigate('/opd-queue')}
                 >
@@ -102,9 +102,9 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
                   onClick={() => navigate('/bed-management')}
                 >
@@ -137,13 +137,11 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
-                  onClick={() => {
-                    window.location.href = 'http://127.0.0.1:8000/admin/inventory/'; 
-                }}
+                  onClick={() => navigate('/inventory-management')}
                 >
                   Manage Inventory
                 </Button>
@@ -174,9 +172,9 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
                   onClick={() => navigate('/reservation-history')}
                 >

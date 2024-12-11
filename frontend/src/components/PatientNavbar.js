@@ -13,16 +13,16 @@ import {
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/pulsepoint.png'; 
+import logo from '../assets/pulsepoint.png'; // Ensure the path is correct
 
 function PatientNavbar() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken'); 
+    localStorage.removeItem('authToken'); // Clear patient authentication token
     localStorage.removeItem('role');
-    navigate('/patient-login'); 
+    navigate('/patient-login'); // Redirect to Patient Login
   };
 
   const toggleDrawer = (open) => () => {

@@ -8,7 +8,7 @@ function PatientSignUp() {
 
   const handleSignUp = (e) => {
     e.preventDefault();
-
+    // Replace with your API call
     setSuccessMessage('Account created successfully! Redirecting to login...');
     setTimeout(() => navigate('/patient-login'), 2000);
   };

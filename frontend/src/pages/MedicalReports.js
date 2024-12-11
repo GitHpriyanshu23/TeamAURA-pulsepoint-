@@ -16,7 +16,7 @@ function MedicalReports() {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    
+    // Simulated API call to fetch reports
     const fetchReports = async () => {
       const data = [
         { id: 1, title: 'Blood Test Report', date: '2024-12-01', fileUrl: '/files/blood-test.pdf' },

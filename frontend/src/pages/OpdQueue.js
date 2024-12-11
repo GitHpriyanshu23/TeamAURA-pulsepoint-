@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
+  Grid,
   Paper,
   Table,
   TableBody,
@@ -24,11 +25,11 @@ function OpdQueue() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ department: '', doctor: '', search: '' });
 
-
+  // Sample Departments and Doctors for Filter
   const departments = ['Cardiology', 'Neurology', 'Orthopedics'];
   const doctors = ['Dr. John Doe', 'Dr. Jane Smith', 'Dr. Alice Brown'];
 
-
+  // Fetch Queue Data (Simulated with timeout)
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -41,19 +42,19 @@ function OpdQueue() {
     }, 1000);
   }, []);
 
-  
+  // Handle Mark as Served
   const handleMarkServed = (id) => {
     setQueue(queue.filter((patient) => patient.id !== id));
     alert('Patient marked as served!');
   };
 
-  
+  // Handle Remove from Queue
   const handleRemove = (id) => {
     setQueue(queue.filter((patient) => patient.id !== id));
     alert('Patient removed from the queue!');
   };
 
-  
+  // Handle Search and Filter
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });

@@ -3,7 +3,11 @@ import { Container, Typography, TextField, Button, MenuItem, Grid } from '@mui/m
 
 function BookOPD() {
   const [appointmentData, setAppointmentData] = useState({
+    aadharNumber: '',
     name: '',
+    gender: '',
+    age: '',
+    mobile: '',
     hospital: '',
     department: '',
     doctor: '',
@@ -15,9 +19,46 @@ function BookOPD() {
   const departments = ['Cardiology', 'Neurology', 'Orthopedics'];
   const doctors = ['Dr. John Doe', 'Dr. Jane Smith', 'Dr. Alice Brown'];
 
+  const mockAadharData = {
+    '503981419995': {
+      name: 'Shreyansh Mahule',
+      gender: 'Male',
+      age: '19',
+      mobile: '9109322676',
+    },
+    '987654321098': {
+      name: 'Jane Smith',
+      gender: 'Female',
+      age: '28',
+      mobile: '8765432109',
+    },
+    '456789123456': {
+      name: 'Alice Brown',
+      gender: 'Female',
+      age: '40',
+      mobile: '7654321098',
+    },
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setAppointmentData({ ...appointmentData, [name]: value });
+  };
+
+  const fetchPatientDetails = () => {
+    const data = mockAadharData[appointmentData.aadharNumber];
+    if (data) {
+      setAppointmentData((prev) => ({
+        ...prev,
+        name: data.name || '',
+        gender: data.gender || '',
+        age: data.age || '',
+        mobile: data.mobile || '',
+      }));
+      alert('Patient details fetched successfully!');
+    } else {
+      alert('No details found for the entered Aadhaar number.');
+    }
   };
 
   const handleSubmit = (e) => {
@@ -33,6 +74,25 @@ function BookOPD() {
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
+          {/* Aadhaar Number */}
+          <Grid item xs={12}>
+            <TextField
+              label="Aadhaar Number"
+              name="aadharNumber"
+              fullWidth
+              value={appointmentData.aadharNumber}
+              onChange={handleInputChange}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              style={{ marginTop: '10px' }}
+              onClick={fetchPatientDetails}
+            >
+              Fetch Details
+            </Button>
+          </Grid>
+
           {/* Patient Name */}
           <Grid item xs={12}>
             <TextField
@@ -40,6 +100,49 @@ function BookOPD() {
               name="name"
               fullWidth
               value={appointmentData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
+
+          {/* Gender */}
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Gender"
+              name="gender"
+              fullWidth
+              value={appointmentData.gender}
+              onChange={handleInputChange}
+              required
+            >
+              <MenuItem value="Male">Male</MenuItem>
+              <MenuItem value="Female">Female</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
+            </TextField>
+          </Grid>
+
+          {/* Age */}
+          <Grid item xs={12}>
+            <TextField
+              label="Age"
+              name="age"
+              type="number"
+              fullWidth
+              value={appointmentData.age}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
+
+          {/* Mobile Number */}
+          <Grid item xs={12}>
+            <TextField
+              label="Mobile Number"
+              name="mobile"
+              type="tel"
+              fullWidth
+              value={appointmentData.mobile}
               onChange={handleInputChange}
               required
             />

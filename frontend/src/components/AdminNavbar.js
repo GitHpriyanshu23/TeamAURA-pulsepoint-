@@ -13,15 +13,15 @@ import {
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/pulsepoint.png'; 
+import logo from '../assets/pulsepoint.png'; // Ensure the path is correct
 
 function AdminNavbar() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminAuthToken'); 
-    navigate('/admin-login'); 
+    localStorage.removeItem('adminAuthToken'); // Clear admin authentication token
+    navigate('/admin-login'); // Redirect to Admin Login
   };
 
   const toggleDrawer = (open) => () => {

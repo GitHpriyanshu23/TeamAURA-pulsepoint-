@@ -24,7 +24,7 @@ function PatientLogin() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    
+    // Simulated patient login logic (replace with API)
     if (credentials.email === 'patient@example.com' && credentials.password === 'password') {
       localStorage.setItem('role', 'patient');
       navigate('/patient-dashboard');

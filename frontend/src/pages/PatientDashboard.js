@@ -19,7 +19,7 @@ function PatientDashboard() {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: 'url("/assets/images/hospital_background.jpg")', 
+          backgroundImage: 'url("/assets/images/hospital_background.jpg")', // Ensure correct image path
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           color: 'white',
@@ -102,9 +102,9 @@ function PatientDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
                   onClick={() => navigate('/reserve-bed')}
                 >
@@ -137,9 +137,9 @@ function PatientDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#ff1744', 
+                    backgroundColor: '#ff1744', // Emergency Red
                     color: 'white',
-                    '&:hover': { backgroundColor: '#d50000' }, 
+                    '&:hover': { backgroundColor: '#d50000' }, // Darker red on hover
                   }}
                   onClick={() => alert('Emergency ambulance booked!')}
                 >
@@ -172,9 +172,9 @@ function PatientDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', 
+                    backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, 
+                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
                   }}
                   onClick={() => navigate('/medical-reports')}
                 >

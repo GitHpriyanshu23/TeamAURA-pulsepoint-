@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
+  Grid,
+  Card,
+  CardContent,
   Button,
   Table,
   TableBody,
@@ -40,13 +43,13 @@ function BedManagement() {
     }, 1000);
   }, []);
 
-  
+  // Filter Handler
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
   };
 
-  
+  // Filtered Data
   const filteredBeds = beds.filter((bed) => {
     return (
       (filters.status === '' || bed.status === filters.status) &&
@@ -55,7 +58,7 @@ function BedManagement() {
     );
   });
 
-  
+  // Actions
   const markAvailable = (id) => {
     setBeds(
       beds.map((bed) =>

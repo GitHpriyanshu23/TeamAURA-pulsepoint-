@@ -15,7 +15,7 @@ function InventoryManagement() {
   const [inventory, setInventory] = useState([]);
 
   useEffect(() => {
-    
+    // Simulated data fetch (replace with API call)
     const fetchInventory = async () => {
       const data = [
         { id: 1, name: 'Paracetamol', quantity: 50 },
