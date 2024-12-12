@@ -19,9 +19,9 @@ const ReservationHistory = () => {
     // Simulated API call to fetch reservation data
     const fetchReservations = async () => {
       const data = [
-        { id: 1, patientName: 'John Doe', bedType: 'ICU', date: '2024-12-01', status: 'Confirmed' },
-        { id: 2, patientName: 'Jane Smith', bedType: 'Private', date: '2024-12-03', status: 'Pending' },
-        { id: 3, patientName: 'Robert Brown', bedType: 'General', date: '2024-12-05', status: 'Cancelled' },
+        { id: 1, patientName: 'Pushkar urode', bedType: 'ICU', date: '2024-12-01', status: 'Confirmed' },
+        { id: 2, patientName: 'bhuti bhushan', bedType: 'Private', date: '2024-12-03', status: 'Pending' },
+        { id: 3, patientName: 'priyanshu', bedType: 'General', date: '2024-12-05', status: 'Cancelled' },
       ];
       setReservations(data);
     };

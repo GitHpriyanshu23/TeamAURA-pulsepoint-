@@ -26,7 +26,7 @@ const NursePanel = () => {
     const mockPatients = [
       {
         id: 1,
-        name: 'John Doe',
+        name: 'Priyanshu Urmaliya',
         age: 30,
         condition: 'Flu',
         status: 'Stable',
@@ -39,7 +39,7 @@ const NursePanel = () => {
       },
       {
         id: 2,
-        name: 'Jane Smith',
+        name: 'Aanchal temley',
         age: 45,
         condition: 'Diabetes',
         status: 'Critical',

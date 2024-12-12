@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,useNavigate } from 'react-router-dom';
 import DoctorPanel from './components/DoctorPanel';
 import NursePanel from './components/NursePanel';
 import AdminNavbar from './components/AdminNavbar';
@@ -22,12 +22,16 @@ import ReservationHistory from './pages/ReservationHistory';
 import PatientSignUp from './pages/PatientSignUp';
 import MedicalReports from './pages/MedicalReports';
 import ProtectedRoute from './components/ProtectedRoute';
+import HospitalIntegrationDashboard from './pages/HospitalIntegrationDashboard';
+import QueueManagement from './pages/QueueManagement';
+import QueueDashboard from './pages/QueueDashboard';
+import WasteManagement from './pages/WasteManagement';
 
 function App() {
-  const [role, setRole] = useState(localStorage.getItem('role')); // Initialize role from localStorage
-  const navigate = useNavigate(); // React Router's navigation function
+  const [role, setRole] = useState(localStorage.getItem('role')); 
+  const navigate = useNavigate(); 
 
-  // Sync state with localStorage
+  
   useEffect(() => {
     const handleStorageChange = () => {
       setRole(localStorage.getItem('role'));
@@ -39,7 +43,7 @@ function App() {
     };
   }, []);
 
-  // Navbar selection based on role
+  
   const renderNavbar = () => {
     switch (role) {
       case 'admin':
@@ -51,7 +55,7 @@ function App() {
       case 'nurse':
         return <NurseNavbar />;
       default:
-        return null; // No navbar for undefined roles
+        return null; 
     }
   };
 
@@ -74,7 +78,7 @@ function App() {
                 onLoginSuccess={() => {
                   localStorage.setItem('role', 'patient');
                   setRole('patient');
-                  navigate('/patient-dashboard'); // Smooth navigation
+                  navigate('/patient-dashboard'); 
                 }}
               />
             }
@@ -86,7 +90,7 @@ function App() {
                 onLoginSuccess={() => {
                   localStorage.setItem('role', 'admin');
                   setRole('admin');
-                  navigate('/admin-dashboard'); // Smooth navigation
+                  navigate('/admin-dashboard'); 
                 }}
               />
             }
@@ -98,7 +102,7 @@ function App() {
                 onLoginSuccess={() => {
                   localStorage.setItem('role', 'doctor');
                   setRole('doctor');
-                  navigate('/doctor-panel'); // Smooth navigation
+                  navigate('/doctor-panel'); 
                 }}
               />
             }
@@ -110,7 +114,7 @@ function App() {
                 onLoginSuccess={() => {
                   localStorage.setItem('role', 'nurse');
                   setRole('nurse');
-                  navigate('/nurse-panel'); // Smooth navigation
+                  navigate('/nurse-panel');
                 }}
               />
             }
@@ -192,6 +196,19 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+  path="/waste-management"
+  element={
+    <ProtectedRoute role="admin">
+      <WasteManagement />
+    </ProtectedRoute>
+  }
+/>
+         
+<Route path="/hospital-integration" element={<HospitalIntegrationDashboard />} />
+<Route path="/queue-management" element={<QueueManagement />} />
+<Route path="/queue-dashboard" element={<QueueDashboard />} />
+
           <Route
             path="/reservation-history"
             element={

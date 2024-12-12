@@ -20,46 +20,55 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-function OpdQueue() {
+function OPDQueue() {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ department: '', doctor: '', search: '' });
+  const [newPatient, setNewPatient] = useState({
+    aadharNumber: '',
+    name: '',
+    age: '',
+    department: '',
+    doctor: '',
+    medicalHistory: '',
+  });
 
-  // Sample Departments and Doctors for Filter
+
   const departments = ['Cardiology', 'Neurology', 'Orthopedics'];
-  const doctors = ['Dr. John Doe', 'Dr. Jane Smith', 'Dr. Alice Brown'];
+  const doctors = ['Priyanshu', 'Aanchal', 'Shreyansh'];
 
-  // Fetch Queue Data (Simulated with timeout)
+  
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
       setQueue([
-        { id: 1, name: 'John Doe', age: 45, department: 'Cardiology', doctor: 'Dr. John Doe', time: '10:30 AM' },
-        { id: 2, name: 'Jane Smith', age: 30, department: 'Neurology', doctor: 'Dr. Jane Smith', time: '11:00 AM' },
-        { id: 3, name: 'Alice Brown', age: 35, department: 'Orthopedics', doctor: 'Dr. Alice Brown', time: '11:30 AM' },
+        { id: 1, name: 'Priyanshu Urmaliya', age: 45, department: 'Cardiology', doctor: 'Priyanshu', time: '10:30 AM' },
+        { id: 2, name: 'Shreyansh', age: 30, department: 'Neurology', doctor: 'Shreyansh', time: '11:00 AM' },
+        { id: 3, name: 'aachanal', age: 35, department: 'Orthopedics', doctor: 'Dr. Aanchal', time: '11:30 AM' },
       ]);
       setLoading(false);
     }, 1000);
   }, []);
 
-  // Handle Mark as Served
+  
   const handleMarkServed = (id) => {
     setQueue(queue.filter((patient) => patient.id !== id));
     alert('Patient marked as served!');
   };
 
-  // Handle Remove from Queue
+  
   const handleRemove = (id) => {
     setQueue(queue.filter((patient) => patient.id !== id));
     alert('Patient removed from the queue!');
   };
 
-  // Handle Search and Filter
+  
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
   };
 
+  
   const filteredQueue = queue.filter((patient) => {
     return (
       (filters.department === '' || patient.department === filters.department) &&
@@ -67,6 +76,48 @@ function OpdQueue() {
       (filters.search === '' || patient.name.toLowerCase().includes(filters.search.toLowerCase()))
     );
   });
+
+  
+  const fetchPatientDetails = async () => {
+    try {
+      const response = await fetch('/mockAadharData.json');
+      if (!response.ok) {
+        throw new Error('Failed to fetch Aadhaar data.');
+      }
+      const data = await response.json();
+  
+      const patientData = data[newPatient.aadharNumber];
+      if (patientData) {
+        setNewPatient((prev) => ({
+          ...prev,
+          name: patientData.name,
+          age: patientData.age,
+          medicalHistory: patientData.medicalHistory,
+        }));
+        alert('Patient details fetched successfully!');
+      } else {
+        alert('No details found for the entered Aadhaar number.');
+      }
+    } catch (error) {
+      console.error('Error fetching patient details:', error);
+      alert('Failed to fetch patient details. Please try again.');
+    }
+  };
+  
+
+  
+  const addToQueue = () => {
+    if (newPatient.name && newPatient.department && newPatient.doctor) {
+      setQueue((prevQueue) => [
+        ...prevQueue,
+        { id: queue.length + 1, ...newPatient, time: new Date().toLocaleTimeString() },
+      ]);
+      setNewPatient({ aadharNumber: '', name: '', age: '', department: '', doctor: '', medicalHistory: '' });
+      alert('Patient added to OPD queue successfully!');
+    } else {
+      alert('Please fill in all required details.');
+    }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -116,6 +167,88 @@ function OpdQueue() {
             ))}
           </Select>
         </FormControl>
+      </Box>
+
+      {/* Add New Patient Section */}
+      <Box sx={{ mb: 4, p: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
+        <Typography variant="h5" gutterBottom>
+          Add New Patient
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              label="Aadhaar Number"
+              fullWidth
+              value={newPatient.aadharNumber}
+              onChange={(e) => setNewPatient({ ...newPatient, aadharNumber: e.target.value })}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Button variant="contained" color="primary" fullWidth onClick={fetchPatientDetails}>
+              Fetch Patient Details
+            </Button>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              label="Patient Name"
+              fullWidth
+              value={newPatient.name}
+              onChange={(e) => setNewPatient({ ...newPatient, name: e.target.value })}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              label="Age"
+              type="number"
+              fullWidth
+              value={newPatient.age}
+              onChange={(e) => setNewPatient({ ...newPatient, age: e.target.value })}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Department</InputLabel>
+              <Select
+                value={newPatient.department}
+                onChange={(e) => setNewPatient({ ...newPatient, department: e.target.value })}
+              >
+                {departments.map((dept) => (
+                  <MenuItem key={dept} value={dept}>
+                    {dept}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Doctor</InputLabel>
+              <Select
+                value={newPatient.doctor}
+                onChange={(e) => setNewPatient({ ...newPatient, doctor: e.target.value })}
+              >
+                {doctors.map((doc) => (
+                  <MenuItem key={doc} value={doc}>
+                    {doc}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Medical History"
+              fullWidth
+              value={newPatient.medicalHistory}
+              onChange={(e) => setNewPatient({ ...newPatient, medicalHistory: e.target.value })}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="contained" color="secondary" fullWidth onClick={addToQueue}>
+              Add to OPD Queue
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
 
       {/* Queue Table */}
@@ -173,4 +306,4 @@ function OpdQueue() {
   );
 }
 
-export default OpdQueue;
+export default OPDQueue;

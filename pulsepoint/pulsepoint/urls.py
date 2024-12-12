@@ -7,7 +7,9 @@ from inventory.views import qr_scanner_view
 from django.urls import path
 from inventory import views
 from django.urls import path
-
+from inventory.views import HospitalListView
+from inventory.views import QueueManagementView
+from inventory.views import AdmitPatientView
 
 
 def home_view(request):
@@ -22,4 +24,15 @@ urlpatterns = [
     path('update-stock/', update_stock, name='update_stock'),
     path('api/inventory/', views.get_inventory, name='get_inventory'),
     path('api/inventory/add/', views.add_medicine, name='add_medicine'),
+    path('api/hospitals/', HospitalListView.as_view(), name='hospital-list'),
+    path('api/queue/', QueueManagementView.as_view(), name='queue-management'),
+    path('api/queue/<int:pk>/', QueueManagementView.as_view(), name='queue-management-detail'),
+    path('api/admit/', AdmitPatientView.as_view(), name='admit-patient'),
+    
+
+    path('api/beds/', views.get_beds, name='get_beds'),
+    path('api/beds/add/', views.add_bed, name='add_bed'),
+    path('api/beds/<str:bed_id>/', views.update_bed_availability, name='update_bed_availability'),
+    
+    
 ]

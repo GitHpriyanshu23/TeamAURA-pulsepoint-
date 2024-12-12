@@ -9,7 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { EventNote, Hotel, LocalHospital, Description } from '@mui/icons-material';
+import { EventNote, Hotel, LocalHospital, Description, Payment } from '@mui/icons-material';
 
 function PatientDashboard() {
   const navigate = useNavigate();
@@ -19,23 +19,22 @@ function PatientDashboard() {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: 'url("/assets/images/hospital_background.jpg")', // Ensure correct image path
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          color: 'white',
+          color: '#f0f4f8',
           padding: '70px 20px',
           textAlign: 'center',
         }}
       >
         <Typography
           variant="h3"
-          sx={{ fontWeight: 'bold', mb: 2, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.7)' }}
+          sx={{ fontWeight: 'bold', mb: 2 , color:'black'}}
         >
           Welcome to PulsePoint Patient Dashboard
         </Typography>
         <Typography
           variant="h6"
-          sx={{ textShadow: '1px 1px 3px rgba(0, 0, 0, 0.7)' }}
+          sx={{ mb: 2, color: 'black' }}
         >
           Access all your healthcare services from one place.
         </Typography>
@@ -141,7 +140,7 @@ function PatientDashboard() {
                     color: 'white',
                     '&:hover': { backgroundColor: '#d50000' }, // Darker red on hover
                   }}
-                  onClick={() => alert('Emergency ambulance booked!')}
+                  onClick={() => (window.location.href = '/emergency.html')}
                 >
                   Emergency Connect
                 </Button>
@@ -179,6 +178,41 @@ function PatientDashboard() {
                   onClick={() => navigate('/medical-reports')}
                 >
                   View Reports
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Payment Gateway */}
+          <Grid item xs={12} md={4}>
+            <Card
+              elevation={4}
+              sx={{
+                textAlign: 'center',
+                padding: '20px',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.05)' },
+              }}
+            >
+              <CardContent>
+                <Payment style={{ fontSize: 60, color: '#4caf50' }} /> {/* Increased size */}
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                  Payment Gateway
+                </Typography>
+                <Typography color="textSecondary" sx={{ mt: 1, mb: 2 }}>
+                  Make secure payments for your medical services.
+                </Typography>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: '#4caf50', // Green
+                    color: 'white',
+                    '&:hover': { backgroundColor: '#388e3c' }, // Darker green on hover
+                  }}
+                  onClick={() => window.open('https://stripe-payments-demo.appspot.com/', '_blank')}
+                >
+                  Make Payment
                 </Button>
               </CardContent>
             </Card>

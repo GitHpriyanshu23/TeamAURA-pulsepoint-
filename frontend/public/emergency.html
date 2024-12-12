@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Services</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Removed #landing styles since it's no longer used */
+
+        #details-section, #map-section {
+            display: none;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+
+        /* Make details-section visible by default */
+        #details-section {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .emergency-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .emergency-btn:hover {
+            background-color: #ff3333;
+        }
+
+        #map {
+            height: 100%;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Details Section (now displayed by default) -->
+    <div id="details-section">
+        <h1>Patient Details</h1>
+        <form id="details-form" onsubmit="handleFormSubmit(event)">
+            <input type="text" id="full-name" placeholder="Full Name" required />
+            <input type="tel" id="phone-number" placeholder="Phone Number" pattern="[0-9]{10}" required />
+            <select id="gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <div class="button-group">
+                <button type="submit">Select Current Location</button>
+                <button type="button" onclick="showManualLocation()">Select Manual Location</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Map Section -->
+    <div id="map-section">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        let userDetails = null;
+        let manualLocation = null;
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const fullName = document.getElementById('full-name').value;
+            const phoneNumber = document.getElementById('phone-number').value;
+            const gender = document.getElementById('gender').value;
+
+            userDetails = { fullName, phoneNumber, gender };
+            document.getElementById('details-section').style.display = 'none';
+            document.getElementById('map-section').style.display = 'block';
+            initializeMap();
+        }
+
+        function showManualLocation() {
+            document.getElementById('details-section').style.display = 'none';
+            document.getElementById('map-section').style.display = 'block';
+            initializeMap(true);
+        }
+
+        function initializeMap(isManual = false) {
+            const map = L.map('map').setView([0, 0], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+            }).addTo(map);
+
+            if (isManual) {
+                map.locate({ setView: true, maxZoom: 13 });
+
+                let marker;
+                map.on('click', function (e) {
+                    const { lat, lng } = e.latlng;
+                    manualLocation = { lat, lng };
+
+                    if (marker) {
+                        marker.setLatLng(e.latlng);
+                    } else {
+                        marker = L.marker(e.latlng).addTo(map).bindPopup('Your selected location').openPopup();
+                    }
+
+                    alert(`Location selected: ${lat}, ${lng}`);
+                    getNearestHospitalAndSimulateAmbulance(lat, lng, map);
+                });
+            } else {
+                navigator.geolocation.getCurrentPosition(async position => {
+                    const { latitude, longitude } = position.coords;
+                    const userLocation = [latitude, longitude];
+                    map.setView(userLocation, 13);
+
+                    const hospitals = await getNearestHospitals(latitude, longitude);
+                    if (hospitals.length > 0) {
+                        hospitals.sort((a, b) => getDistance(userLocation, [a.lat, a.lon]) - getDistance(userLocation, [b.lat, b.lon]));
+                        const nearestHospital = hospitals[0];
+                        displayHospitals(map, hospitals, userLocation);
+                        simulateAmbulanceMovement(map, nearestHospital, userLocation);
+                    } else {
+                        alert('No hospitals found nearby!');
+                    }
+                }, () => {
+                    alert('Unable to retrieve your location.');
+                });
+            }
+        }
+
+        async function getNearestHospitalAndSimulateAmbulance(lat, lng, map) {
+            const hospitals = await getNearestHospitals(lat, lng);
+            if (hospitals.length > 0) {
+                hospitals.sort((a, b) => getDistance([lat, lng], [a.lat, a.lon]) - getDistance([lat, lng], [b.lat, b.lon]));
+                const nearestHospital = hospitals[0];
+                displayHospitals(map, hospitals, [lat, lng]);
+                simulateAmbulanceMovement(map, nearestHospital, [lat, lng]);
+            } else {
+                alert('No hospitals found nearby!');
+            }
+        }
+
+        async function getNearestHospitals(lat, lon) {
+            const query = `
+                [out:json];
+                node
+                  ["amenity"="hospital"]
+                  (around:5000, ${lat}, ${lon});
+                out body;
+            `;
+            const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            return data.elements.map(hospital => ({
+                name: hospital.tags.name || 'Unknown Hospital',
+                lat: hospital.lat,
+                lon: hospital.lon,
+            }));
+        }
+
+        function displayHospitals(map, hospitals, userLocation) {
+            L.marker(userLocation).addTo(map).bindPopup('You are here').openPopup();
+
+            hospitals.forEach(hospital => {
+                L.marker([hospital.lat, hospital.lon])
+                    .addTo(map)
+                    .bindPopup(hospital.name);
+            });
+        }
+
+        function getDistance(coord1, coord2) {
+            const rad = Math.PI / 180;
+            const lat1 = coord1[0] * rad, lon1 = coord1[1] * rad;
+            const lat2 = coord2[0] * rad, lon2 = coord2[1] * rad;
+
+            const dlat = lat2 - lat1;
+            const dlon = lon2 - lon1;
+            const a = Math.sin(dlat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon / 2) ** 2;
+            return 6371 * 2 * Math.asin(Math.sqrt(a)); // Distance in km
+        }
+
+        function simulateAmbulanceMovement(map, hospital, userLocation) {
+            const routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(hospital.lat, hospital.lon),
+                    L.latLng(userLocation[0], userLocation[1])
+                ],
+                routeWhileDragging: false,
+                createMarker: function() { return null; }
+            }).addTo(map);
+
+            routingControl.on('routesfound', function(e) {
+                const route = e.routes[0];
+                const steps = route.coordinates;
+                let stepIndex = 0;
+
+                const ambulanceMarker = L.marker([hospital.lat, hospital.lon], {
+                    icon: L.icon({
+                        iconUrl: 'https://cdn.icon-icons.com/icons2/2252/PNG/512/care_medical_ambulance_icon_140100.png',
+                        iconSize: [50, 50],
+                    }),
+                }).addTo(map).bindPopup('Ambulance is on the way!').openPopup();
+
+                const interval = setInterval(() => {
+                    if (stepIndex >= steps.length) {
+                        clearInterval(interval);
+                        ambulanceMarker.setLatLng(userLocation).bindPopup('Ambulance has arrived!').openPopup();
+                        alert('Ambulance has arrived at your location! & Bed is Booked!');
+                    } else {
+                        ambulanceMarker.setLatLng(steps[stepIndex]);
+                        stepIndex++;
+                    }
+                }, 200);
+            });
+        }
+    </script>
+</body>
+</html>

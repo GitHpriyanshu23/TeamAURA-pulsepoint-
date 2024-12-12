@@ -42,7 +42,7 @@ const DoctorPanel = () => {
       },
       {
         id: 2,
-        name: 'Jane Smith',
+        name: 'shreyansh',
         age: 45,
         condition: 'Diabetes',
         status: 'Critical',
@@ -51,7 +51,7 @@ const DoctorPanel = () => {
       },
       {
         id: 3,
-        name: 'Samuel Brown',
+        name: 'Pushkar',
         age: 65,
         condition: 'Hypertension',
         status: 'Stable',

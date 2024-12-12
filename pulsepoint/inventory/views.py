@@ -12,7 +12,17 @@ from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import MedicineSerializer
-
+from rest_framework.views import APIView
+from rest_framework import status
+from .models import Hospital
+from .serializers import HospitalSerializer
+from .models import Patient, Bed
+from .serializers import PatientSerializer
+from django.utils.timezone import now
+from django.db.models import Case, When
+from django.utils import timezone
+from .models import Patient
+from .serializers import BedSerializer
 
 
 
@@ -148,8 +158,108 @@ def get_inventory(request):
 
 @api_view(['POST'])
 def add_medicine(request):
-    serializer = MedicineSerializer(data=request.data)
+    serializer = MedicineSerializer(data=request.data)  
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
+
+
+
+class HospitalListView(APIView):
+    def get(self, request):
+        hospitals = Hospital.objects.all()
+        serializer = HospitalSerializer(hospitals, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = HospitalSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class QueueManagementView(APIView):
+    def post(self, request):
+        print("Incoming Data:", request.data)  
+        
+        serializer = PatientSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print("Data Saved Successfully")  
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        # Log validation errors if the data is invalid
+        print("Validation Errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request):
+        # Prioritize critical patients first
+        patients = Patient.objects.annotate(
+            priority=Case(
+                When(criticalness='critical', then=1), 
+                When(criticalness='non-critical', then=2),  
+                default=3
+            )
+        ).order_by('priority', 'arrival_time')  
+        
+        
+        serializer = PatientSerializer(patients, many=True)
+        return Response(serializer.data)
+    
+
+
+class AdmitPatientView(APIView):
+    def post(self, request):
+        patient_id = request.data.get('patient_id')
+        bed_id = request.data.get('bed_id')
+
+        try:
+            # Get patient and bed objects
+            patient = Patient.objects.get(id=patient_id)
+            bed = Bed.objects.get(bed_id=bed_id)
+
+            if not bed.is_available:
+                return Response({'error': 'Bed is not available.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Admit the patient
+            patient.is_admitted = True
+            patient.admission_date = timezone.now()
+            patient.bed_assigned = bed.bed_id
+            patient.save()
+
+            # Update bed status
+            bed.is_available = False
+            bed.assigned_to = patient
+            bed.save()
+
+            return Response({'success': 'Patient admitted successfully.'}, status=status.HTTP_200_OK)
+
+        except Patient.DoesNotExist:
+            return Response({'error': 'Patient not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Bed.DoesNotExist:
+            return Response({'error': 'Bed not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+@api_view(['GET'])
+def get_beds(request):
+    beds = Bed.objects.all()
+    serializer = BedSerializer(beds, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def add_bed(request):
+    serializer = BedSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['PATCH'])
+def update_bed_availability(request, bed_id):
+    try:
+        bed = Bed.objects.get(bed_id=bed_id)
+        bed.is_available = request.data.get('is_available', bed.is_available)
+        bed.save()
+        serializer = BedSerializer(bed)
+        return Response(serializer.data, status=200)
+    except Bed.DoesNotExist:
+        return Response({"error": "Bed not found"}, status=404)

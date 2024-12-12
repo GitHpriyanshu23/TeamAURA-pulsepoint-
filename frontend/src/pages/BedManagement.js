@@ -2,190 +2,140 @@ import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
-  Grid,
-  Card,
-  CardContent,
-  Button,
   Table,
-  TableBody,
-  TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Box,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
+  TableCell,
+  TableBody,
+  Button,
   CircularProgress,
+  TextField,
+  MenuItem,
+  FormControl,
+  Select,
+  InputLabel,
 } from '@mui/material';
+import axios from 'axios';
 
 function BedManagement() {
   const [beds, setBeds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ status: '', roomType: '', search: '' });
+  const [newBed, setNewBed] = useState({ bed_id: '', type: '', is_available: true });
 
-  const roomTypes = ['General Ward', 'ICU', 'Private Room'];
-  const bedStatuses = ['Available', 'Occupied'];
-
-  // Simulated data fetching
+  // Fetch beds from API
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setBeds([
-        { id: 'B001', roomType: 'ICU', status: 'Occupied', patientName: 'John Doe', doctor: 'Dr. Smith' },
-        { id: 'B002', roomType: 'General Ward', status: 'Available', patientName: '', doctor: '' },
-        { id: 'B003', roomType: 'Private Room', status: 'Occupied', patientName: 'Alice Brown', doctor: 'Dr. Brown' },
-      ]);
-      setLoading(false);
-    }, 1000);
+    axios
+      .get('http://127.0.0.1:8000/api/beds/')
+      .then((response) => {
+        setBeds(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching beds:', error);
+        setLoading(false);
+      });
   }, []);
 
-  // Filter Handler
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
-  };
-
-  // Filtered Data
-  const filteredBeds = beds.filter((bed) => {
-    return (
-      (filters.status === '' || bed.status === filters.status) &&
-      (filters.roomType === '' || bed.roomType === filters.roomType) &&
-      (filters.search === '' || bed.id.toLowerCase().includes(filters.search.toLowerCase()))
-    );
-  });
-
-  // Actions
-  const markAvailable = (id) => {
-    setBeds(
-      beds.map((bed) =>
-        bed.id === id ? { ...bed, status: 'Available', patientName: '', doctor: '' } : bed
-      )
-    );
-    alert(`Bed ${id} is now available.`);
-  };
-
-  const assignBed = (id) => {
-    const patientName = prompt('Enter patient name:');
-    const doctor = prompt('Enter assigned doctor:');
-    if (patientName && doctor) {
-      setBeds(
-        beds.map((bed) =>
-          bed.id === id ? { ...bed, status: 'Occupied', patientName, doctor } : bed
-        )
-      );
-      alert(`Bed ${id} has been assigned to ${patientName} under ${doctor}.`);
+  // Add a new bed
+  const handleAddBed = () => {
+    if (!newBed.bed_id || !newBed.type) {
+      alert('Please fill in all fields for the new bed.');
+      return;
     }
+    axios
+      .post('http://127.0.0.1:8000/api/beds/', newBed)
+      .then((response) => {
+        setBeds([...beds, response.data]);
+        setNewBed({ bed_id: '', type: '', is_available: true });
+        alert('Bed added successfully!');
+      })
+      .catch((error) => {
+        console.error('Error adding bed:', error);
+        alert('Failed to add bed. Please try again.');
+      });
   };
+
+  // Toggle bed availability
+  const toggleAvailability = (bedId) => {
+    axios
+      .patch(`http://127.0.0.1:8000/api/beds/${bedId}/`, { is_available: false })
+      .then((response) => {
+        const updatedBeds = beds.map((bed) =>
+          bed.bed_id === bedId ? { ...bed, is_available: !bed.is_available } : bed
+        );
+        setBeds(updatedBeds);
+      })
+      .catch((error) => {
+        console.error('Error updating bed availability:', error);
+        alert('Failed to update bed availability.');
+      });
+  };
+
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 4, fontFamily: 'Poppins' }}>
+    <Container style={{ marginTop: '50px' }}>
+      <Typography variant="h4" align="center" gutterBottom>
         Bed Management
       </Typography>
 
-      {/* Filters */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <TextField
-          label="Search by Bed ID"
-          name="search"
-          variant="outlined"
-          value={filters.search}
-          onChange={handleFilterChange}
-          sx={{ width: '30%' }}
-        />
-        <FormControl sx={{ width: '30%' }}>
-          <InputLabel>Room Type</InputLabel>
-          <Select
-            name="roomType"
-            value={filters.roomType}
-            onChange={handleFilterChange}
-            label="Room Type"
-          >
-            <MenuItem value="">All</MenuItem>
-            {roomTypes.map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: '30%' }}>
-          <InputLabel>Status</InputLabel>
-          <Select
-            name="status"
-            value={filters.status}
-            onChange={handleFilterChange}
-            label="Status"
-          >
-            <MenuItem value="">All</MenuItem>
-            {bedStatuses.map((status) => (
-              <MenuItem key={status} value={status}>
-                {status}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
+      {/* Add New Bed */}
+      <div style={{ marginBottom: '20px' }}>
+        <Typography variant="h6">Add New Bed</Typography>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <TextField
+            label="Bed ID"
+            value={newBed.bed_id}
+            onChange={(e) => setNewBed({ ...newBed, bed_id: e.target.value })}
+          />
+          <FormControl style={{ minWidth: 150 }}>
+            <InputLabel>Type</InputLabel>
+            <Select
+              value={newBed.type}
+              onChange={(e) => setNewBed({ ...newBed, type: e.target.value })}
+            >
+              <MenuItem value="general">General</MenuItem>
+              <MenuItem value="icu">ICU</MenuItem>
+              <MenuItem value="special">Special</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" onClick={handleAddBed}>
+            Add Bed
+          </Button>
+        </div>
+      </div>
 
-      {/* Bed Table */}
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Bed ID</strong></TableCell>
-                <TableCell><strong>Room Type</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Patient Name</strong></TableCell>
-                <TableCell><strong>Doctor</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredBeds.map((bed) => (
-                <TableRow key={bed.id}>
-                  <TableCell>{bed.id}</TableCell>
-                  <TableCell>{bed.roomType}</TableCell>
-                  <TableCell>{bed.status}</TableCell>
-                  <TableCell>{bed.patientName || 'N/A'}</TableCell>
-                  <TableCell>{bed.doctor || 'N/A'}</TableCell>
-                  <TableCell>
-                    {bed.status === 'Occupied' ? (
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={() => markAvailable(bed.id)}
-                      >
-                        Mark Available
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={() => assignBed(bed.id)}
-                      >
-                        Assign
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      {/* Display Beds */}
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Bed ID</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Availability</TableCell>
+            <TableCell>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {beds.map((bed) => (
+            <TableRow key={bed.bed_id}>
+              <TableCell>{bed.bed_id}</TableCell>
+              <TableCell>{bed.type}</TableCell>
+              <TableCell>{bed.is_available ? 'Available' : 'Occupied'}</TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color={bed.is_available ? 'success' : 'error'}
+                  onClick={() => toggleAvailability(bed.bed_id)}
+                >
+                  {bed.is_available ? 'Mark as Occupied' : 'Mark as Available'}
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </Container>
   );
 }

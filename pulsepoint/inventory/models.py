@@ -63,3 +63,66 @@ class PurchaseOrder(models.Model):
     def __str__(self):
         return f"Order for {self.medicine.name} from {self.supplier.name} - {self.quantity} units"
 
+class Hospital(models.Model):
+    name = models.CharField(max_length=255)
+    status = models.CharField(max_length=50, choices=[('active', 'Active'), ('pending', 'Pending')])
+    type = models.CharField(max_length=50, choices=[('public', 'Public'), ('private', 'Private'), ('phc', 'PHC')])
+    location = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+class Patient(models.Model):
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    ]
+
+    CRITICALNESS_CHOICES = [
+        ('critical', 'Critical'),
+        ('non-critical', 'Non-Critical'),
+    ]
+
+    name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    symptoms = models.TextField()
+    criticalness = models.CharField(max_length=20, choices=[('critical', 'Critical'), ('non-critical', 'Non-Critical')])
+    arrival_time = models.DateTimeField(auto_now_add=True)
+    hospital = models.CharField(max_length=255, null=True, blank=True)
+    department = models.CharField(max_length=255, null=True, blank=True)
+    doctor = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+
+    is_admitted = models.BooleanField(default=False)  
+    admission_date = models.DateTimeField(null=True, blank=True)
+    bed_assigned = models.CharField(max_length=255, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        
+        self.gender = self.gender.lower()
+        super(Patient, self).save(*args, **kwargs)
+
+class Bed(models.Model):
+    BED_TYPE_CHOICES = [
+        ('general', 'General'),
+        ('icu', 'ICU'),
+        ('special', 'Special'),
+    ]
+
+    bed_id = models.CharField(max_length=50, unique=True)
+    type = models.CharField(max_length=50, choices=BED_TYPE_CHOICES)
+    is_available = models.BooleanField(default=True)
+    assigned_start_time = models.DateTimeField(null=True, blank=True)
+    assigned_end_time = models.DateTimeField(null=True, blank=True)
+    assigned_to = models.ForeignKey(
+        Patient, null=True, blank=True, on_delete=models.SET_NULL, related_name='assigned_bed'
+    )
+
+    def __str__(self):
+        return f"Bed {self.bed_id} ({self.type})"

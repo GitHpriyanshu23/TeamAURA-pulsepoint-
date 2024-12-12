@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, MenuItem, Grid } from '@mui/material';
+import axios from 'axios';
 
 function BookOPD() {
   const [appointmentData, setAppointmentData] = useState({
     aadharNumber: '',
-    name: '',
+    name: '', 
     gender: '',
     age: '',
     mobile: '',
@@ -13,11 +14,13 @@ function BookOPD() {
     doctor: '',
     date: '',
     time: '',
+    symptoms: '',
+    criticalness: 'non-critical',
   });
 
   const hospitals = ['City Hospital', 'Global Medical Center', 'Sunrise Clinic'];
   const departments = ['Cardiology', 'Neurology', 'Orthopedics'];
-  const doctors = ['Dr. John Doe', 'Dr. Jane Smith', 'Dr. Alice Brown'];
+  const doctors = ['Priyanshu', 'Shreyansh', 'Aanchal'];
 
   const mockAadharData = {
     '503981419995': {
@@ -27,13 +30,13 @@ function BookOPD() {
       mobile: '9109322676',
     },
     '987654321098': {
-      name: 'Jane Smith',
+      name: 'Aanchal',
       gender: 'Female',
       age: '28',
       mobile: '8765432109',
     },
     '456789123456': {
-      name: 'Alice Brown',
+      name: 'Pushkar',
       gender: 'Female',
       age: '40',
       mobile: '7654321098',
@@ -61,10 +64,32 @@ function BookOPD() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Appointment booked successfully at ${appointmentData.hospital}!`);
-    // Replace with API call
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/queue/', {
+        ...appointmentData,
+        arrival_time: new Date().toISOString(),
+      });
+      alert(`Appointment booked successfully and added to the queue!`);
+      setAppointmentData({
+        aadharNumber: '',
+        name: '',
+        gender: '',
+        age: '',
+        mobile: '',
+        hospital: '',
+        department: '',
+        doctor: '',
+        date: '',
+        time: '',
+        symptoms: '',
+        criticalness: 'non-critical',
+      });
+    } catch (err) {
+      console.error('Error booking appointment:', err);
+      alert('Failed to book appointment. Please try again.');
+    }
   };
 
   return (
@@ -113,12 +138,14 @@ function BookOPD() {
               name="gender"
               fullWidth
               value={appointmentData.gender}
-              onChange={handleInputChange}
+              onChange={(e) =>
+                setAppointmentData({ ...appointmentData, gender: e.target.value })
+            }
               required
             >
-              <MenuItem value="Male">Male</MenuItem>
-              <MenuItem value="Female">Female</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
             </TextField>
           </Grid>
 
@@ -148,7 +175,7 @@ function BookOPD() {
             />
           </Grid>
 
-          {/* Select Hospital */}
+          {/* Hospital */}
           <Grid item xs={12}>
             <TextField
               select
@@ -167,7 +194,7 @@ function BookOPD() {
             </TextField>
           </Grid>
 
-          {/* Select Department */}
+          {/* Department */}
           <Grid item xs={12}>
             <TextField
               select
@@ -186,7 +213,7 @@ function BookOPD() {
             </TextField>
           </Grid>
 
-          {/* Select Doctor */}
+          {/* Doctor */}
           <Grid item xs={12}>
             <TextField
               select
@@ -231,6 +258,34 @@ function BookOPD() {
               onChange={handleInputChange}
               required
             />
+          </Grid>
+
+          {/* Symptoms */}
+          <Grid item xs={12}>
+            <TextField
+              label="Symptoms"
+              name="symptoms"
+              fullWidth
+              value={appointmentData.symptoms}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
+
+          {/* Criticalness */}
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Criticalness"
+              name="criticalness"
+              fullWidth
+              value={appointmentData.criticalness}
+              onChange={handleInputChange}
+              required
+            >
+              <MenuItem value="critical">Critical</MenuItem>
+              <MenuItem value="non-critical">Non-Critical</MenuItem>
+            </TextField>
           </Grid>
 
           {/* Submit Button */}

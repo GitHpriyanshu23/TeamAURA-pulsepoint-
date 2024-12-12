@@ -9,7 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { People, Hotel, Inventory2, Description } from '@mui/icons-material';
+import { People, Hotel, Inventory2, Description, Delete, Build } from '@mui/icons-material';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -19,23 +19,22 @@ function AdminDashboard() {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: 'url("/assets/hospital.jpg")', // Ensure correct image path
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          color: 'white',
+          color: '#f0f4f8',
           padding: '70px 20px',
           textAlign: 'center',
         }}
       >
         <Typography
           variant="h3"
-          sx={{ fontWeight: 'bold', mb: 2, textShadow: '2px 2px 4px rgba(0, 0, 0, 0.7)' }}
+          sx={{ fontWeight: 'bold', mb: 2, color: 'black' }}
         >
           Welcome to PulsePoint Admin Dashboard
         </Typography>
         <Typography
-          variant="h6"
-          sx={{ textShadow: '1px 1px 3px rgba(0, 0, 0, 0.7)' }}
+          variant="h5"
+          sx={{ color: 'black', mb: 2 }}
         >
           Manage all hospital operations from one place.
         </Typography>
@@ -56,7 +55,7 @@ function AdminDashboard() {
               }}
             >
               <CardContent>
-                <People style={{ fontSize: 60, color: '#757575' }} /> {/* Increased size */}
+                <People style={{ fontSize: 60, color: '#757575' }} />
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                   Manage OPD Queue
                 </Typography>
@@ -69,7 +68,7 @@ function AdminDashboard() {
                   sx={{
                     backgroundColor: '#212121', // Black
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
+                    '&:hover': { backgroundColor: '#424242' },
                   }}
                   onClick={() => navigate('/opd-queue')}
                 >
@@ -91,7 +90,7 @@ function AdminDashboard() {
               }}
             >
               <CardContent>
-                <Hotel style={{ fontSize: 60, color: '#757575' }} /> {/* Increased size */}
+                <Hotel style={{ fontSize: 60, color: '#757575' }} />
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                   Bed Management
                 </Typography>
@@ -102,9 +101,9 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', // Black
+                    backgroundColor: '#212121',
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
+                    '&:hover': { backgroundColor: '#424242' },
                   }}
                   onClick={() => navigate('/bed-management')}
                 >
@@ -126,7 +125,7 @@ function AdminDashboard() {
               }}
             >
               <CardContent>
-                <Inventory2 style={{ fontSize: 60, color: '#757575' }} /> {/* Increased size */}
+                <Inventory2 style={{ fontSize: 60, color: '#757575' }} />
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                   Inventory Management
                 </Typography>
@@ -137,11 +136,13 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', // Black
+                    backgroundColor: '#212121',
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
+                    '&:hover': { backgroundColor: '#424242' },
                   }}
-                  onClick={() => navigate('/inventory-management')}
+                  onClick={() => {
+                    window.location.href = 'http://127.0.0.1:8000/admin/inventory/'; // Update with the correct URL
+                  }}
                 >
                   Manage Inventory
                 </Button>
@@ -161,7 +162,7 @@ function AdminDashboard() {
               }}
             >
               <CardContent>
-                <Description style={{ fontSize: 60, color: '#757575' }} /> {/* Increased size */}
+                <Description style={{ fontSize: 60, color: '#757575' }} />
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
                   Reservation History
                 </Typography>
@@ -172,9 +173,9 @@ function AdminDashboard() {
                   variant="contained"
                   fullWidth
                   sx={{
-                    backgroundColor: '#212121', // Black
+                    backgroundColor: '#212121',
                     color: 'white',
-                    '&:hover': { backgroundColor: '#424242' }, // Darker grey on hover
+                    '&:hover': { backgroundColor: '#424242' },
                   }}
                   onClick={() => navigate('/reservation-history')}
                 >
@@ -183,6 +184,112 @@ function AdminDashboard() {
               </CardContent>
             </Card>
           </Grid>
+
+          {/* Waste Management */}
+          <Grid item xs={12} md={4}>
+            <Card
+              elevation={4}
+              sx={{
+                textAlign: 'center',
+                padding: '20px',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.05)' },
+              }}
+            >
+              <CardContent>
+                <Delete style={{ fontSize: 60, color: '#757575' }} />
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                  Waste Management
+                </Typography>
+                <Typography color="textSecondary" sx={{ mt: 1, mb: 2 }}>
+                  Manage hospital waste efficiently.
+                </Typography>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: '#212121',
+                    color: 'white',
+                    '&:hover': { backgroundColor: '#424242' },
+                  }}
+                  onClick={() => navigate('/waste-management')}
+                >
+                  Manage Waste
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Queue Dashboard */}
+          <Grid item xs={12} md={4}>
+            <Card
+              elevation={4}
+              sx={{
+                textAlign: 'center',
+                padding: '20px',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.05)' },
+              }}
+            >
+              <CardContent>
+                <People style={{ fontSize: 60, color: '#757575' }} />
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                  Queue Dashboard
+                </Typography>
+                <Typography color="textSecondary" sx={{ mt: 1, mb: 2 }}>
+                  Monitor and manage all hospital queues in one place.
+                </Typography>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: '#212121',
+                    color: 'white',
+                    '&:hover': { backgroundColor: '#424242' },
+                  }}
+                  onClick={() => navigate('/queue-dashboard')}
+                >
+                  Go to Queue Dashboard
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Hospital Integration */}
+          <Grid item xs={12} md={4}>
+            <Card
+              elevation={4}
+              sx={{
+                textAlign: 'center',
+                padding: '20px',
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'scale(1.05)' },
+              }}
+            >
+              <CardContent>
+                <Build style={{ fontSize: 60, color: '#757575' }} />
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 2 }}>
+                  Hospital Integration
+                </Typography>
+                <Typography color="textSecondary" sx={{ mt: 1, mb: 2 }}>
+                  Integrate external hospital systems and manage data exchanges.
+                </Typography>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    backgroundColor: '#212121',
+                    color: 'white',
+                    '&:hover': { backgroundColor: '#424242' },
+                  }}
+                  onClick={() => navigate('/hospital-integration')}
+                >
+                  Integrate Hospital Systems
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
         </Grid>
       </Container>
     </Box>

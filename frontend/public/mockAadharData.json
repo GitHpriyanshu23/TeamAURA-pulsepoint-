@@ -1,0 +1,23 @@
+{
+  "503981419995": {
+    "name": "Shreyansh Mahule",
+    "gender": "Male",
+    "age": "19",
+    "mobile": "9109322676",
+    "medicalHistory": ["Hypertension","Diabetes"]
+  },
+  "694062126066": {
+    "name": "Pushkar Urode",
+    "gender": "Male",
+    "age": "20",
+    "mobile": "9302515448",
+    "medicalHistory": ["Hypertension","Diabetes"]
+  },
+  "583283908427": {
+    "name": "Priyanshu Urmaliya",
+    "gender": "Male",
+    "age": "21",
+    "mobile": "8770941053",
+    "medicalHistory": ["Hypertension","Diabetes"]
+  }
+}
